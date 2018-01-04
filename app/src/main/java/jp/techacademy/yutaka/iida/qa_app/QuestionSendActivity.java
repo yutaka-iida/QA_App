@@ -149,9 +149,6 @@ public class QuestionSendActivity extends AppCompatActivity implements View.OnCl
             data.put("title", title);
             data.put("body", body);
             data.put("name", name);
-            // QuestionID追加
-            String questionId = uid + "-" + System.currentTimeMillis();
-            data.put(Const.QuestionID, questionId);
             // ジャンルID追加
             data.put(Const.GenrID, String.valueOf(mGenre));
 

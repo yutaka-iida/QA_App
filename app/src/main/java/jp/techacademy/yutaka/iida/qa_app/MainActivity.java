@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Favorite> mFavorites;
     private Realm mRealm;
-    
+
 
     private DatabaseReference mDatabaseReference;
     private DatabaseReference mGenreRef;
@@ -57,12 +57,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             HashMap map = (HashMap) dataSnapshot.getValue();
-            String questionId = (String) map.get(Const.QuestionID);
+            String questionUid = dataSnapshot.getKey();
 
             // お気に入り
             if(mGenre == Const.FavoriteItem){
-                // お気に入り以外は表示しない
-                RealmResults<Favorite> results = mRealm.where(Favorite.class).equalTo(Const.QuestionID, questionId).findAll();
+                // お気に入り以外はふるいにかける
+                RealmResults<Favorite> results = mRealm.where(Favorite.class).equalTo(Const.QuestionID, questionUid).findAll();
                 if(results.size() == 0) {
                     return;
                 }
@@ -94,11 +94,11 @@ public class MainActivity extends AppCompatActivity {
             }
             if(mGenre == Const.FavoriteItem){
                 String genr = (String)map.get(Const.GenrID);
-                Question question = new Question(questionId, title, body, name, uid, dataSnapshot.getKey(), Integer.parseInt(genr), bytes, answerArrayList);
+                Question question = new Question(title, body, name, uid, questionUid, Integer.parseInt(genr), bytes, answerArrayList);
                 mQuestionArrayList.add(question);
             }
             else{
-                Question question = new Question(questionId, title, body, name, uid, dataSnapshot.getKey(), mGenre, bytes, answerArrayList);
+                Question question = new Question(title, body, name, uid, questionUid, mGenre, bytes, answerArrayList);
                 mQuestionArrayList.add(question);
             }
             mAdapter.notifyDataSetChanged();
@@ -212,21 +212,8 @@ public class MainActivity extends AppCompatActivity {
         setFavoriteMenuItem();
         // レルムの設定
         mRealm = Realm.getDefaultInstance();
-        // お気に入りの読み込み
-//        loadFavorite();
     }
 
-    // お気に入りの読み込み
-/*
-    private void loadFavorite(){
-        RealmResults<Favorite> favoriteRealmResults = mRealm.where(Favorite.class).findAllSorted(Const.QuestionID, Sort.ASCENDING);
-        if(mFavorites != null) {
-            mFavorites.clear();
-            mFavorites = null;
-        }
-        mFavorites = mRealm.copyFromRealm(favoriteRealmResults);
-    }
-*/
     // リストビューの再表示
     private void refreshList(){
 
@@ -257,8 +244,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        // お気に入りの読み込み
-//        loadFavorite();
         // お気に入りの表示非表示設定
         setFavoriteMenuItem();
         // リストの更新

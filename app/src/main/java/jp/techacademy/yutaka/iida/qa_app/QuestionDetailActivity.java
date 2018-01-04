@@ -33,15 +33,8 @@ public class QuestionDetailActivity extends AppCompatActivity {
     private boolean mIsFavorite = false;
 
     private DatabaseReference mAnswerRef;
-
     private Realm mRealm;
-//    private RealmChangeListener mRealmListener = new RealmChangeListener() {
-//        @Override
-//        public void onChange(Object element) {
-//            showFavbutton();
-//            return;
-//        }
-//    };
+
     private ChildEventListener mEventListner = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -91,7 +84,6 @@ public class QuestionDetailActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         mQuestion = (Question)extras.get("question");
         mRealm = Realm.getDefaultInstance();
-//        mRealm.addChangeListener(mRealmListener);
 
         setTitle(mQuestion.getTitle());
 
@@ -151,13 +143,13 @@ public class QuestionDetailActivity extends AppCompatActivity {
                 identifier = 0;
             }
             favorite.setId(identifier);
-            favorite.setQuestionid(mQuestion.getQuestionId());
+            favorite.setQuestionid(mQuestion.getQuestionUid());
             mRealm.beginTransaction();
             mRealm.copyToRealmOrUpdate(favorite);
             mRealm.commitTransaction();
         }
         else{ // 削除
-            RealmResults<Favorite> results = mRealm.where(Favorite.class).equalTo(Const.QuestionID, mQuestion.getQuestionId()).findAll();
+            RealmResults<Favorite> results = mRealm.where(Favorite.class).equalTo(Const.QuestionID, mQuestion.getQuestionUid()).findAll();
             mRealm.beginTransaction();
             results.deleteAllFromRealm();
             mRealm.commitTransaction();
@@ -181,7 +173,7 @@ public class QuestionDetailActivity extends AppCompatActivity {
             mFab2.setVisibility(View.VISIBLE);
         }
         // お気に入りの状況に合わせてぼたん表示
-        RealmResults<Favorite> results = mRealm.where(Favorite.class).equalTo(Const.QuestionID, mQuestion.getQuestionId()).findAll();
+        RealmResults<Favorite> results = mRealm.where(Favorite.class).equalTo(Const.QuestionID, mQuestion.getQuestionUid()).findAll();
         if(results.size() == 0) {
             mFab2.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.fav_off, null));
             mIsFavorite = false;
